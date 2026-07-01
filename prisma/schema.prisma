@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DeathnoteSubmission {
+  id            String            @id @default(cuid())
+
+  player_id     String
+  nickname      String
+  country       String
+  avatar        String
+
+  submitted_by  String?
+  reason        String?
+  clip_url      String?
+
+  status        SubmissionStatus  @default(PENDING)
+
+  createdAt     DateTime          @default(now())
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
