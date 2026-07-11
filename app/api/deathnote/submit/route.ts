@@ -15,10 +15,9 @@ export async function POST(req: Request) {
             clip_url: data.clipUrl
         }
     })
+    return Response.json(createSubmission)
     } catch(error)  {
         return Response.json("Server is not working",{status: 500})
-    } finally {
-    return Response.json(createSubmission)
-    }
+    } 
 }
 
