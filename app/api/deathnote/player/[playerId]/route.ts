@@ -10,7 +10,7 @@ export async function GET(req: Request, {params}: {params: {playerId: string}}) 
                 player_id: playerId
             },
 })
-        const memeScore = Math.min(count * 15, 100)
+        const memeScore = Math.min(count * 15, 1000)
         const lastReport = await prisma.deathnoteSubmission.findMany({
         take: 3,
         orderBy: {

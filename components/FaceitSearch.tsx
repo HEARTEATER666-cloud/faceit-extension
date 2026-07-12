@@ -94,9 +94,7 @@ const [clipUrl,setClipUrl] = useState("")
     async function deathnoteInfo(playerId: string) {
     console.log("deathnote called", playerId)
 	const response = await fetch(`/api/deathnote/player/${playerId}`)
-	
 	if (!response.ok) return 
-
 	const data = await response.json()
     console.log(data)
 	setDeathnoteData(data)
@@ -105,40 +103,66 @@ const [clipUrl,setClipUrl] = useState("")
 
     const deathnoteDataLastReport = deathnoteData?.lastReport.map((report) => {
         return (
-        <div>{report.reason}
+        <div className="border-2 border-orange-500 rounded-2xl p-2 mt-2 space-y-2">{report.reason}
         <p>Submitted by :{report.submitted_by}</p>
-        <p>Created at: {report.createdAt}</p>
+        <p>Created at: {report.createdAt.toString().slice(0,-14)}</p>
         </div>
     )
     })
 
+    function scoreBadge(score: number) {     
+            if (score >= 100) {
+                return "bg-black-500"
+            } else if (score >= 80) {
+                return "bg-red-500"
+        } else if (score >= 60) {
+            return "bg-orange-500"
+        } else if (score >= 40) {
+            return "bg-yellow-500"
+        } else if (score >= 20) {
+            return "bg-green-500"
+        }
+    }
+
+
     return <div className="max-w-md mx-auto bg-[#060606] text-orange-600 p-6 rounded-2xl">
-        <div className="h-full  bg-[#2e2e2e]">
+        <div className="h-full  bg-[#2e2e2e] rounded-2xl p-6">
         {loading && <p>Loading...</p>}
         {error && <p>{error}</p>}
-        <input className="" value={nickname} onChange={((e) => setNickname(e.target.value))}
+        <form className="flex flex-col items-center p-2" onSubmit={handleSearch}>
+        <input className="rounded-xl" value={nickname} onChange={((e) => setNickname(e.target.value))}
         />
-        <button className="" onClick={handleSearch} disabled={loading}>Search</button>
+        <button className="mt-2 border-2 border-orange-500 rounded-2xl p-2" onClick={handleSearch} disabled={loading}>Search</button>
+        </form>
 
-        <div className="">
+        <article className="">
             {player && deathnoteData && (
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center mt-4">
             <img className="w-32 h-32 rounded-full object-cover" src={player.avatar} alt={player.nickname}/>
-           
-            <p className="mt-4 text-3xl font-bold">{player.nickname}</p>
+            <header className="flex flex-col items-center">
+            <h2 className="mt-4 text-3xl font-bold">{player.nickname}</h2>
             <p className="text-gray-400">{player.country}</p>
-            <div className="mt-6 space-y-2">
-            <p>{player.player_id}</p>
-            <p>Meme Score:{deathnoteData.memeScore}</p>
-            <p>Subsmissions: {deathnoteData.count}</p>
+            </header>
+            <section className="mt-4 w-full space-y-2">
+            
+            <p>Meme Score: {deathnoteData.memeScore}</p>
+            <div className="bg-gray-600 h-3 rounded-full" 
+            style={{width: 100 + "%"}}>
+                <div className={`${scoreBadge(deathnoteData.memeScore)} h-3 rounded-full transition-all duration-500`}
+                style={{width: deathnoteData.memeScore.toString() + "%"}}></div>
             </div>
-            <div className="mt-6">{deathnoteDataLastReport}</div>
+            <p>Subsmissions: {deathnoteData.count}</p>
+            </section>
+            <section className="flex flex-col items-center mt-6 p-2 rounded-2xl">
+                <p className="text-2xl mb-2 ">Last Reports</p> {deathnoteDataLastReport}</section>
+            <footer className="mt-2">
             <button 
-            className="mt-6 w-full rounded-lg bg-orange-600 py-2 font-semibold text-white hover:bg-orange-700 transition" 
+            className="mt-2 p-2 w-full rounded-lg bg-orange-600 py-2 font-semibold text-white hover:bg-orange-800 transition" 
             onClick={() => setShowForm(true)}>Submit to Deathnote</button>
+            </footer>
             </div>
             )}
-        </div>
+        </article>
         
         <div>
             {player && showForm && deathnoteData &&(
