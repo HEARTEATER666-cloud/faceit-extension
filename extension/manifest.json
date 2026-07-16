@@ -1,0 +1,19 @@
+{
+    "name": "faceit-extension",
+    "version": "1.0.1",
+    "action": "faceit-extension",
+
+    "background": {
+        "scripts": []
+    },
+    
+    "browser_action": {
+        "deafult_icon": {
+            "1": "",
+            "2": ""
+        },
+        "default_title": "FACEIT DEATHNOTE",
+        "default_popup": "popup/"
+    },
+    
+}

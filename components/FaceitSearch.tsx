@@ -35,7 +35,8 @@ const [reason,setReason] = useState("")
 const [submittedBy,setSubmittedBy] = useState("")
 const [clipUrl,setClipUrl] = useState("")
 
-    async function handleSearch() {
+    async function handleSearch(e: React.FormEvent) {
+        e.preventDefault()
         setError(null)
         setPlayer(null)
 
@@ -92,7 +93,6 @@ const [clipUrl,setClipUrl] = useState("")
 }
 
     async function deathnoteInfo(playerId: string) {
-    console.log("deathnote called", playerId)
 	const response = await fetch(`/api/deathnote/player/${playerId}`)
 	if (!response.ok) return 
 	const data = await response.json()
@@ -103,16 +103,18 @@ const [clipUrl,setClipUrl] = useState("")
 
     const deathnoteDataLastReport = deathnoteData?.lastReport.map((report) => {
         return (
-        <div className="border-2 border-orange-500 rounded-2xl p-2 mt-2 space-y-2">{report.reason}
+        <div 
+        key={`${report.submitted_by}-${report.createdAt}`}
+        className="border-2 border-orange-500 rounded-2xl p-2 mt-2 space-y-2">{report.reason}
         <p>Submitted by :{report.submitted_by}</p>
-        <p>Created at: {report.createdAt.toString().slice(0,-14)}</p>
+        <p>Created at: {new Date(report.createdAt).toLocaleDateString()}</p>
         </div>
     )
     })
 
     function scoreBadge(score: number) {     
             if (score >= 100) {
-                return "bg-black-500"
+                return "bg-black"
             } else if (score >= 80) {
                 return "bg-red-500"
         } else if (score >= 60) {
@@ -125,36 +127,40 @@ const [clipUrl,setClipUrl] = useState("")
     }
 
 
-    return <div className="max-w-md mx-auto bg-[#060606] text-orange-600 p-6 rounded-2xl">
-        <div className="h-full  bg-[#2e2e2e] rounded-2xl p-6">
+    return <div className="max-w-md mx-auto bg-[#060606] p-6 rounded-2xl">
+        <div className="h-full  bg-[#2e2e2e] rounded-2xl p-4">
         {loading && <p>Loading...</p>}
         {error && <p>{error}</p>}
+        <h1 className="text-center text-xl text-orange-600">🏴‍☠️ FACEIT DEATHNOTE</h1>
         <form className="flex flex-col items-center p-2" onSubmit={handleSearch}>
-        <input className="rounded-xl" value={nickname} onChange={((e) => setNickname(e.target.value))}
+        <input className="rounded-xl w-full p-2 mt-1" value={nickname} onChange={((e) => setNickname(e.target.value))}
         />
-        <button className="mt-2 border-2 border-orange-500 rounded-2xl p-2" onClick={handleSearch} disabled={loading}>Search</button>
+        <button 
+        className="mt-2 border-2 w-full border-orange-500 rounded-2xl p-2 hover:bg-orange-800 transition bg-orange-500 text-white font-semibold" 
+        onClick={handleSearch} disabled={loading}>Search</button>
         </form>
 
         <article className="">
             {player && deathnoteData && (
             <div className="flex flex-col items-center mt-4">
-            <img className="w-32 h-32 rounded-full object-cover" src={player.avatar} alt={player.nickname}/>
+            <img className="w-16 h-16 rounded-full object-cover" src={player.avatar} alt={player.nickname}/>
             <header className="flex flex-col items-center">
-            <h2 className="mt-4 text-3xl font-bold">{player.nickname}</h2>
+            <h2 className="mt-2 text-3xl font-bold text-orange-500">{player.nickname}</h2>
             <p className="text-gray-400">{player.country}</p>
             </header>
-            <section className="mt-4 w-full space-y-2">
-            
-            <p>Meme Score: {deathnoteData.memeScore}</p>
+
+            <section className="mt-6 w-full space-y-2 font-bold">
+            <p className="text-orange-500 text-center">Faggot Score: {deathnoteData.memeScore}</p>
             <div className="bg-gray-600 h-3 rounded-full" 
             style={{width: 100 + "%"}}>
                 <div className={`${scoreBadge(deathnoteData.memeScore)} h-3 rounded-full transition-all duration-500`}
                 style={{width: deathnoteData.memeScore.toString() + "%"}}></div>
             </div>
-            <p>Subsmissions: {deathnoteData.count}</p>
+            <p className="text-orange-500 text-center font-bold">Subsmissions: {deathnoteData.count}</p>
             </section>
-            <section className="flex flex-col items-center mt-6 p-2 rounded-2xl">
-                <p className="text-2xl mb-2 ">Last Reports</p> {deathnoteDataLastReport}</section>
+
+            <section className="flex flex-col items-center mt-2 p-2 rounded-2xl text-orange-500">
+                <p className="text-2xl mb-2 text-orange-500 font-bold">Last Reports</p> {deathnoteDataLastReport}</section>
             <footer className="mt-2">
             <button 
             className="mt-2 p-2 w-full rounded-lg bg-orange-600 py-2 font-semibold text-white hover:bg-orange-800 transition" 

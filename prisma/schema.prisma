@@ -12,8 +12,8 @@ model DeathnoteSubmission {
 
   player_id     String
   nickname      String
-  country       String
-  avatar        String
+  country       String?
+  avatar        String?
 
   submitted_by  String?
   reason        String?
