@@ -1,7 +1,6 @@
 "use client"
 import { useState } from "react"
 
-
 type Player = {
     player_id: string;
     nickname: string;
@@ -96,7 +95,6 @@ const [clipUrl,setClipUrl] = useState("")
 	const response = await fetch(`/api/deathnote/player/${playerId}`)
 	if (!response.ok) return 
 	const data = await response.json()
-    console.log(data)
 	setDeathnoteData(data)
         
     }

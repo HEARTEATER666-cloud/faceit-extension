@@ -1,17 +1,25 @@
 import { prisma } from "@/lib/prisma"
+import { cookies } from "next/headers"
 
 export async function GET(req: Request) {
     const {searchParams} = new URL(req.url)
     const nickname = searchParams.get("nickname")
-    const adminKey = req.headers.get("x-admin-key")
-    const ADMIN_SECRET = process.env.ADMIN_SECRET
+    const cookieStore = await cookies();
+    const token = cookieStore.get("admin_session")
 
-    if (adminKey !== ADMIN_SECRET) return Response.json({error: "error"}, {status: 401})
+    if (token?.value !== "authenticated") { 
+        return Response.json({error: "Unathorized"}, {status: 401})
+    } 
 
     const where = {
-        status: "PENDING" as const,
-        ...(nickname ? {nickname} : {})
-    }
+    status: "PENDING" as const,
+    ...(nickname ? {
+        nickname: {
+            contains: nickname,
+            mode: "insensitive" as const
+        }
+    } : {})
+}
 
     try {
     const submissions = await prisma.deathnoteSubmission.findMany({
@@ -27,4 +35,6 @@ export async function GET(req: Request) {
 } catch (error) {
     return Response.json({error:"admin not working"}, {status: 500})
 }
+    
 }
+
